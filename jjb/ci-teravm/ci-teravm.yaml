@@ -1,0 +1,29 @@
+- job-template:
+    name: "ci-teravm" // job name
+    node: "ubuntu-dev-teravm"  //agent name
+    build-args: ""    //why it is empty? dowe need to add any args???
+    scm:
+      - lf-infra-github-scm:
+          url: "https://github.com/magma/magma"    // magma github url
+          refspec: ""             //why it is empty? dowe need to add any args???
+          branch: "refs/heads/master"
+          submodule-recursive: false
+          submodule-timeout: "{submodule-timeout}"
+          submodule-disable: true
+          choosing-strategy: default
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    wrappers:
+      - lf-infra-wrappers:
+          build-timeout: "{build-timeout}"
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    triggers:
+      - github-pull-request:
+          trigger-phrase: "^(remerge)$"
+          only-trigger-phrase: true
+          status-context: "Magma AGW node merge"
+          permit-all: true
+          github-hooks: true
+          white-list-target-branches:
+            - "master"
+    builders:
+      - shell:  fab run_3gpp_tests:setup_2    //command to run on driver
