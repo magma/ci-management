@@ -72,7 +72,7 @@
           #include-failed-tests: True
           commit-info-choice: 'AUTHORS_AND_TITLES'
           include-custom-message: True
-          custom-message: 'A custom message.'
+          custom-message: 'Message from HW In LOOP Testing JOB'
           #auth-token-credential-id: yourauthtoken
           #bot-user: True
-          base-url: https://hooks.slack.com/services/T018QE9RWKT/B0275PGJ01K/
+          base-url: https://hooks.slack.com/services/
