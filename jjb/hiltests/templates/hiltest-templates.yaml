@@ -1,6 +1,6 @@
 - job-template:
-    name: "{project-name}-hiltests"
-    node: "ci-hiltest"
+    name: "{project-name}-LF-hiltest"
+    node: "static-ubuntu-dev-hiltest"
     build-args: ""
     scm:
       - lf-infra-github-scm:
@@ -29,11 +29,10 @@
       - shell:  fab echo "Hello World"
 
 - publisher:
-    name: teravm-jjb-email-notification
+    name: hiltest-jjb-email-notification
     publishers:
       - email:
           recipients: "milapjoshi@fb.com"
-    publishers:
       - email-ext:
           recipients: "milapjoshi@fb.com"
           reply-to: "milapjoshi@fb.com"
@@ -51,7 +50,6 @@
           attachments: "**/reports/*"
           send-to:
             - recipients
-    publishers:
       - slack:
           team-domain: "magmacore"
           auth-token: "DPKFwmiCxQ9VPq95liGUCEwk"
