@@ -12,6 +12,7 @@
     archive-artifacts: "**/*.log"
     branch: master
     build-timeout: 60
+    submodule-timeout: 60
     build-node: static-ubuntu-dev-hiltest
     jjb-version: 3.5.0
     build-node-label-check: true
