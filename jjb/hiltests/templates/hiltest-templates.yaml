@@ -26,7 +26,7 @@
           white-list-target-branches:
             - "master"
     builders:
-      - shell:  fab echo "Hello World"
+      - shell: fab echo "Hello World"
 
 - publisher:
     name: hiltest-jjb-email-notification
@@ -54,7 +54,7 @@
           team-domain: "magmacore"
           auth-token: "DPKFwmiCxQ9VPq95liGUCEwk"
           auth-token-id: "magma-test"
-          room: '#magma-test'
+          room: "#magma-test"
           notify-start: True
           notify-success: True
           notify-aborted: True
