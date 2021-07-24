@@ -1,0 +1,15 @@
+---
+- project:
+    name: clm-project-view
+    project-name: clm
+    views:
+      - project-view
+
+- project:
+    name: go-clm
+    jobs:
+      - gerrit-go-clm
+    nexus-iq-namespace: 'magma-'
+    project: 'magma/magma'
+    project-name: 'clm-go'
+    branch: 'master'
