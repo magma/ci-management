@@ -1,6 +1,5 @@
 - job-template:
     name: "{project-name}-clm-go"
-    node: "ubuntu-dev-teravm"
 
     ######################
     # Default parameters #
@@ -101,7 +100,7 @@
 
 - job-template:
     name: "{project-name}-go-clm-{stream}"
-    id: github-maven-clm
+    id: github-go-clm
 
     properties:
       - lf-infra-properties:
