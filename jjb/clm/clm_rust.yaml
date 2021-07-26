@@ -1,7 +1,7 @@
 ---
 - project:
-    name: clm-project-view
-    project-name: clm
+    name: clm-rust-project-view
+    project-name: clm-rust
     views:
       - project-view
 
@@ -9,7 +9,7 @@
     name: rust-clm
     jobs:
       - gerrit-rust-clm
-    nexus-iq-namespace: 'magma-'
-    project: 'magma/magma'
-    project-name: 'clm-rust'
-    branch: 'master'
+    nexus-iq-namespace: "magma-"
+    project: "magma/magma"
+    project-name: "clm-rust"
+    branch: "master"
