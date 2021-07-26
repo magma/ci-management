@@ -1,0 +1,136 @@
+- job-template:
+    name: "{project-name}-clm-rust"
+
+    ######################
+    # Default parameters #
+    ######################
+
+    branch: master
+    build-days-to-keep: 30 # 30 days for troubleshooting purposes
+    build-timeout: 60
+    disable-job: false
+    git-url: "$GIT_URL/$PROJECT"
+    github-url: "https://github.com"
+    nexus-iq-namespace: "" # Recommend a trailing dash when set. Example: odl-
+    nexus-iq-stage: "build"
+    stream: master
+    submodule-recursive: true
+    submodule-timeout: 10
+    submodule-disable: false
+
+    nexus_iq_scan_patterns:
+      - "**/*.ear"
+      - "**/*.jar"
+      - "**/*.tar.gz"
+      - "**/*.war"
+      - "**/*.zip"
+
+    gerrit_clm_triggers:
+      - comment-added-contains-event:
+          comment-contains-value: '^Patch Set\s+\d+:\s+run-clm\s*$'
+
+    parameters:
+      - lf-infra-parameters:
+          project: "{project}"
+          branch: "{branch}"
+          stream: "{stream}"
+      - string:
+          name: ARCHIVE_ARTIFACTS
+          default: "{archive-artifacts}"
+          description: Artifacts to archive to the logs server.
+      - lf-clm-parameters:
+          nexus-iq-stage: "{nexus-iq-stage}"
+
+    #####################
+    # Job Configuration #
+    #####################
+
+    disabled: "{disable-job}"
+
+    builders:
+      - nexus-iq-policy-evaluator:
+          stage: "{nexus-iq-stage}"
+          application-type: "manual"
+          application-id: "{nexus-iq-namespace}{project-name}"
+          scan-patterns: "{obj:nexus_iq_scan_patterns}"
+          fail-build-network-error: true
+
+#- builder:
+#    name: lf-infra-sonatype-clm
+#    builders:
+#      - inject:
+#          properties-content: |
+#            MAVEN_GOALS={mvn-goals}
+#      - shell: !include-raw-escape:
+#          - ../shell/common-variables.sh
+#          - ../shell/sonatype-clm.sh
+
+- job-template:
+    name: "{project-name}-rust-clm-{stream}"
+    id: gerrit-rust-clm
+
+    scm:
+      - lf-infra-gerrit-scm:
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+          git-url: "{git-url}"
+          refspec: "$GERRIT_REFSPEC"
+          branch: "$GERRIT_BRANCH"
+          submodule-recursive: "{submodule-recursive}"
+          submodule-timeout: "{submodule-timeout}"
+          submodule-disable: "{submodule-disable}"
+          choosing-strategy: default
+
+    triggers:
+      # Build weekly on Saturdays
+      - timed: "H H * * 6"
+      - gerrit:
+          server-name: "{gerrit-server-name}"
+          trigger-on: "{obj:gerrit_clm_triggers}"
+          projects:
+            - project-compare-type: ANT
+              project-pattern: "{project}"
+              branches:
+                - branch-compare-type: ANT
+                  branch-pattern: "**/{branch}"
+          skip-vote:
+            successful: true
+            failed: true
+            unstable: true
+            notbuilt: true
+
+- job-template:
+    name: "{project-name}-rust-clm-{stream}"
+    id: github-rust-clm
+
+    properties:
+      - lf-infra-properties:
+          build-days-to-keep: "{build-days-to-keep}"
+      - github:
+          url: "{github-url}/{github-org}/{project}"
+
+    scm:
+      - lf-infra-github-scm:
+          url: "{git-clone-url}{github-org}/{project}"
+          refspec: ""
+          branch: "refs/heads/{branch}"
+          submodule-recursive: "{submodule-recursive}"
+          submodule-timeout: "{submodule-timeout}"
+          submodule-disable: "{submodule-disable}"
+          choosing-strategy: default
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+
+    triggers:
+      # Build weekly on Saturdays
+      - timed: "H H * * 6"
+      - github-pull-request:
+          trigger-phrase: "^run-clm$"
+          only-trigger-phrase: true
+          status-context: "CLM"
+          permit-all: true
+          github-hooks: true
+          org-list:
+            - "{github-org}"
+          white-list: "{obj:github_pr_whitelist}"
+          admin-list: "{obj:github_pr_admin_list}"
+          white-list-target-branches:
+            - "{branch}"
