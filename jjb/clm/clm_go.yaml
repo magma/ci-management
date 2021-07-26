@@ -1,7 +1,7 @@
 ---
 - project:
-    name: clm-project-view
-    project-name: clm
+    name: clm-go-project-view
+    project-name: clm-go
     views:
       - project-view
 
