@@ -1,0 +1,11 @@
+---
+- project:
+    name: cwag-project-view
+    project-name: cwag
+    views:
+      - project-view
+
+- project:
+    name: cwag
+    jobs:
+      - cwag-integ-test
