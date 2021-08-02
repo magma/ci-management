@@ -1,0 +1,4 @@
+# This Ansible playbook adds packages to the
+# Magma docker build minion image.
+---
+- import_playbook: ../common-packer/provision/local-docker.yaml
