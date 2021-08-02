@@ -1,11 +1,19 @@
----
 - project:
     name: cwag-project-view
     project-name: cwag
     views:
       - project-view
-
 - project:
-    name: cwag
+    name: cwag-integ-test-job
     jobs:
-      - cwag-integ-test
+      - "{project-name}cwag-integ-test"
+    project: cwag
+    project-name: cwag
+    archive-artifacts: "**/*.log"
+    branch: master
+    build-timeout: 60
+    submodule-timeout: 60
+    build-node: static-ubuntu-dev-hiltest
+    jjb-version: 3.5.0
+    build-node-label-check: true
+    build-node-label-list: "ci-hiltest"
