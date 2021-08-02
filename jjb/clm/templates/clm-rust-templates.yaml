@@ -1,5 +1,59 @@
-- job-template:
-    name: "{project-name}-clm-rust"
+####################
+# COMMON FUNCTIONS #
+####################
+
+- lf_rust_common: &lf_rust_common
+    name: lf-rust-common
+
+    ######################
+    # Default parameters #
+    ######################
+
+    archive-artifacts: >
+      **/*.log
+      **/hs_err_*.log
+      **/target/**/feature.xml
+      **/target/failsafe-reports/failsafe-summary.xml
+      **/target/surefire-reports/*-output.txt
+    #####################
+    # Job Configuration #
+    #####################
+
+    project-type: freestyle
+    node: "{build-node}"
+
+    properties:
+      - lf-infra-properties:
+          build-days-to-keep: "{build-days-to-keep}"
+
+    parameters:
+      - lf-infra-parameters:
+          project: "{project}"
+          branch: "{branch}"
+          stream: "{stream}"
+      - string:
+          name: ARCHIVE_ARTIFACTS
+          default: "{archive-artifacts}"
+          description: Artifacts to archive to the logs server.
+
+    wrappers:
+      - lf-infra-wrappers:
+          build-timeout: "{build-timeout}"
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+
+    publishers:
+      # TODO: Make email notification work.
+      # - lf-infra-email-notify:
+      #     email-recipients: '{email-recipients}'
+      #     email-prefix: '[releng]'
+      - lf-infra-publish
+
+#############
+# rust CLM  #
+#############
+
+- lf_rust_clm: &lf_rust_clm
+    name: lf-rust-clm
 
     ######################
     # Default parameters #
@@ -19,11 +73,7 @@
     submodule-disable: false
 
     nexus_iq_scan_patterns:
-      - "**/*.ear"
-      - "**/*.jar"
-      - "**/*.tar.gz"
-      - "**/*.war"
-      - "**/*.zip"
+      - "**/*.rs"
 
     gerrit_clm_triggers:
       - comment-added-contains-event:
@@ -66,8 +116,11 @@
 #          - ../shell/sonatype-clm.sh
 
 - job-template:
-    name: "{project-name}-rust-clm-{stream}"
+    name: "{project-name}-go-clm-{stream}"
     id: gerrit-rust-clm
+    <<: *lf_rust_common
+    # yamllint disable-line rule:key-duplicates
+    <<: *lf_rust_clm
 
     scm:
       - lf-infra-gerrit-scm:
