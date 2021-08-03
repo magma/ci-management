@@ -1,0 +1,32 @@
+- job-template:
+    name: "{project-name}-cwag-integ-test"
+    node: "static-ubuntu-dev-hiltest"
+    build-args: ""
+    scm:
+      - lf-infra-github-scm:
+          url: "github.com/magma/"
+          refspec: ""
+          branch: "refs/heads/{branch}"
+          submodule-recursive: false
+          submodule-timeout: "{submodule-timeout}"
+          submodule-disable: true
+          choosing-strategy: default
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    wrappers:
+      - lf-infra-wrappers:
+          build-timeout: "{build-timeout}"
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    triggers:
+      - github-pull-request:
+          trigger-phrase: "^(remerge)$"
+          only-trigger-phrase: true
+          status-context: "Magma AGW node merge"
+          permit-all: true
+          github-hooks: true
+          white-list-target-branches:
+            - "master"
+    builders:
+      - shell: echo 'export MAGMA_ROOT=$(pwd)' >> $BASH_ENV
+      - shell: sudo apt-get update
+      - shell: sudo apt-get install -y openvpn
+
