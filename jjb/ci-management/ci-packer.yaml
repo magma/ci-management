@@ -2,26 +2,28 @@
 - project:
     name: packer-project-view
     project-name: packer
-    regex: "^ci-management-packer-.*"
+    view-regex: "^ci-management-packer-.*"
     views:
       - project-view
 
 - project:
     name: packer-verify
     jobs:
-      - gerrit-packer-verify
+      - github-packer-verify
 
     project: ci-management
     project-name: ci-management
+    branch: main
     build-node: centos7-builder-2c-1g
 
 - project:
     name: packer-builder-jobs
     jobs:
-      - gerrit-packer-merge
+      - github-packer-merge
 
     project: ci-management
     project-name: ci-management
+    branch: main
     build-node: centos7-builder-2c-1g
 
     templates: builder
