@@ -1,10 +1,10 @@
 ---
 - project:
-    name: packer-project-view
-    project-name: packer
+    name: packer-common-view
+    view-name: packer
     view-regex: "^ci-management-packer-.*"
     views:
-      - project-view
+      - common-view
 
 - project:
     name: packer-verify
