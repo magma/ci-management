@@ -2,7 +2,7 @@
 - project:
     name: packer-project-view
     project-name: packer
-    regex: "^ci-management-packer-.*"
+    view-regex: "^ci-management-packer-.*"
     views:
       - project-view
 
