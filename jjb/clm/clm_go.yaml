@@ -11,5 +11,5 @@
       - gerrit-go-clm
     nexus-iq-namespace: "magma-"
     project: "magma"
-    project-name: "clm-go"
+    project-name: "{project-name}-go-clm-{stream}"
     branch: "master"
