@@ -69,7 +69,7 @@
 - job-template:
     name: "{project-name}-go-clm-{stream}"
     id: gerrit-rust-clm
-    <<: *lf_maven_common
+    <<: *lf-maven-common
     # yamllint disable-line rule:key-duplicates
     <<: *lf_rust_clm
 
