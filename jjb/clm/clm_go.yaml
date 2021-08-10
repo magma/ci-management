@@ -10,6 +10,6 @@
     jobs:
       - gerrit-go-clm
     nexus-iq-namespace: "magma-"
-    project: "magma/magma"
+    project: "magma"
     project-name: "clm-go"
     branch: "master"
