@@ -10,6 +10,6 @@
     jobs:
       - gerrit-rust-clm
     nexus-iq-namespace: "magma-"
-    project: "magma/magma"
-    project-name: "clm-rust"
+    project: "magma"
+    project-name: "{project-name}-rust-clm-{stream}"
     branch: "master"
