@@ -1,7 +1,7 @@
 
-#############
-# Go CLM    #
-#############
+##########
+# Go CLM #
+##########
 
 - lf_go_clm: &lf_go_clm
     name: lf-go-clm
