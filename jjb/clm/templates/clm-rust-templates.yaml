@@ -1,56 +1,7 @@
-####################
-# COMMON FUNCTIONS #
-####################
 
-- lf_rust_common: &lf_rust_common
-    name: lf-rust-common
-
-    ######################
-    # Default parameters #
-    ######################
-
-    archive-artifacts: >
-      **/*.log
-      **/hs_err_*.log
-      **/target/**/feature.xml
-      **/target/failsafe-reports/failsafe-summary.xml
-      **/target/surefire-reports/*-output.txt
-    #####################
-    # Job Configuration #
-    #####################
-
-    project-type: freestyle
-    node: "{build-node}"
-
-    properties:
-      - lf-infra-properties:
-          build-days-to-keep: "{build-days-to-keep}"
-
-    parameters:
-      - lf-infra-parameters:
-          project: "{project}"
-          branch: "{branch}"
-          stream: "{stream}"
-      - string:
-          name: ARCHIVE_ARTIFACTS
-          default: "{archive-artifacts}"
-          description: Artifacts to archive to the logs server.
-
-    wrappers:
-      - lf-infra-wrappers:
-          build-timeout: "{build-timeout}"
-          jenkins-ssh-credential: "{jenkins-ssh-credential}"
-
-    publishers:
-      # TODO: Make email notification work.
-      # - lf-infra-email-notify:
-      #     email-recipients: '{email-recipients}'
-      #     email-prefix: '[releng]'
-      - lf-infra-publish
-
-#############
-# rust CLM  #
-#############
+############
+# Rust CLM #
+############
 
 - lf_rust_clm: &lf_rust_clm
     name: lf-rust-clm
@@ -118,7 +69,7 @@
 - job-template:
     name: "{project-name}-go-clm-{stream}"
     id: gerrit-rust-clm
-    <<: *lf_rust_common
+    <<: *lf_maven_common
     # yamllint disable-line rule:key-duplicates
     <<: *lf_rust_clm
 
