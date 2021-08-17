@@ -42,6 +42,6 @@
     branch: main
     build-node: centos7-builder-2c-1g
 
-    templates: builder
+    templates: docker
     platforms:
       - ubuntu-20.04
