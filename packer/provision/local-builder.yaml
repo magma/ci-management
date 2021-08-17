@@ -17,7 +17,7 @@
         state: present
 
     - apt: update_cache=yes name={{ item }} state=present
-      loop: ['linux-headers-generic', 'linux-headers-4.15.0-50-generic', 'virtualbox-6.1', 'unzip']
+      loop: ['linux-headers-generic', 'virtualbox-6.1', 'unzip']
 
     - apt: update_cache=yes name={{ item }} state=present
       loop: ['qemu', 'libvirt-daemon-system', 'libvirt-clients', 'ebtables', 'dnsmasq-base', 'libicu-dev', 'libxslt-dev', 'libxml2-dev', 'libvirt-dev', 'zlib1g-dev', 'ruby-dev', 'nfs-common', 'nfs-kernel-server']
@@ -55,6 +55,22 @@
     - service:
         name: libvirtd
         state: restarted
+
+    - name: Ensure groups exist
+      ansible.builtin.group:
+        name: "{item}"
+        state: present
+      with_items:
+        - sudo
+        - docker
+        - kvm
+        - libvirt
+
+    - name: set up jenkins user
+      user:
+        name: jenkins
+        groups: sudo,docker,kvm,libvirt
+
     - name: Create a directory if it does not exist
       file:
         path: /var/jenkins/
@@ -81,10 +97,10 @@
         dest: /usr/local/bin/gofmt
         state: link
     - apt: update_cache=yes name={{ item }} state=latest
-      loop: ["make", "build-essential", "libssl-dev", "zlib1g-dev", "libbz2-dev", "libreadline-dev", "libsqlite3-dev", "wget", "curl", "llvm", "libncurses5-dev", "libncursesw5-dev", "xz-utils", "tk-dev", "libffi-dev", "liblzma-dev", "python-openssl", "git", "unzip", "jq"]
+      loop: ["make", "libssl-dev", "zlib1g-dev", "libbz2-dev", "libreadline-dev", "libsqlite3-dev", "wget", "curl", "llvm", "libncurses5-dev", "libncursesw5-dev", "xz-utils", "tk-dev", "libffi-dev", "liblzma-dev", "python-openssl", "git", "unzip", "jq"]
     - git:
         repo: 'https://github.com/pyenv/pyenv.git'
-        dest: ~/.pyenv
+        dest: /home/jenkins/.pyenv
       become: jenkins
     - file:
         src: /home/jenkins/.pyenv/bin/pyenv
@@ -96,10 +112,6 @@
         url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
         mode: '0777'
-    - name: set up jenkins user
-      user:
-        name: jenkins
-        groups: sudo,docker,kvm,libvirt
     - shell: pip install junit2html
 
     - shell: vagrant plugin update
