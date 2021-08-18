@@ -20,11 +20,26 @@
 
     - name: install virtual box
       apt: update_cache=yes name={{ item }} state=present
-      loop: ['linux-headers-generic', 'virtualbox-6.1', 'unzip']
+      loop: ["linux-headers-generic", "virtualbox-6.1", "unzip"]
 
     - name: install libvirt packages
       apt: update_cache=yes name={{ item }} state=present
-      loop: ['qemu', 'libvirt-daemon-system', 'libvirt-clients', 'ebtables', 'dnsmasq-base', 'libicu-dev', 'libxslt-dev', 'libxml2-dev', 'libvirt-dev', 'zlib1g-dev', 'ruby-dev', 'nfs-common', 'nfs-kernel-server']
+      loop:
+        [
+          "qemu",
+          "libvirt-daemon-system",
+          "libvirt-clients",
+          "ebtables",
+          "dnsmasq-base",
+          "libicu-dev",
+          "libxslt-dev",
+          "libxml2-dev",
+          "libvirt-dev",
+          "zlib1g-dev",
+          "ruby-dev",
+          "nfs-common",
+          "nfs-kernel-server",
+        ]
 
     - name: Download vagrant
       get_url:
@@ -37,7 +52,8 @@
 
     - name: Install virtualisation packages
       apt: update_cache=yes name={{ item }} state=present
-      loop: ["qemu-kvm", "virt-top", "libguestfs-tools", "virtinst", "bridge-utils"]
+      loop:
+        ["qemu-kvm", "virt-top", "libguestfs-tools", "virtinst", "bridge-utils"]
 
     - name: Enable vhost_net
       community.general.modprobe:
@@ -90,7 +106,7 @@
         state: directory
         owner: jenkins
         group: jenkins
-        mode: '0755'
+        mode: "0755"
 
     - name: Add ansible repo
       apt_repository:
@@ -99,7 +115,7 @@
 
     - name: Install ansible
       apt: update_cache=yes name={{ item }} state=latest
-      loop: ['ansible']
+      loop: ["ansible"]
 
     - name: Unarchive a file that needs to be downloaded (added in 2.0)
       unarchive:
@@ -121,11 +137,32 @@
 
     - name: install dependencies
       apt: update_cache=yes name={{ item }} state=latest
-      loop: ["make", "libssl-dev", "zlib1g-dev", "libbz2-dev", "libreadline-dev", "libsqlite3-dev", "wget", "curl", "llvm", "libncurses5-dev", "libncursesw5-dev", "xz-utils", "tk-dev", "libffi-dev", "liblzma-dev", "python-openssl", "git", "unzip", "jq"]
+      loop:
+        [
+          "make",
+          "libssl-dev",
+          "zlib1g-dev",
+          "libbz2-dev",
+          "libreadline-dev",
+          "libsqlite3-dev",
+          "wget",
+          "curl",
+          "llvm",
+          "libncurses5-dev",
+          "libncursesw5-dev",
+          "xz-utils",
+          "tk-dev",
+          "libffi-dev",
+          "liblzma-dev",
+          "python-openssl",
+          "git",
+          "unzip",
+          "jq",
+        ]
 
     - name: Download pyenv
       git:
-        repo: 'https://github.com/pyenv/pyenv.git'
+        repo: "https://github.com/pyenv/pyenv.git"
         dest: /home/jenkins/.pyenv
 
     - name: Link pyenv binary
@@ -142,7 +179,7 @@
       get_url:
         url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
-        mode: '0777'
+        mode: "0777"
 
     - name: Install junit2html
       shell: pip install junit2html
