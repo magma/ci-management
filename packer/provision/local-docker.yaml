@@ -164,6 +164,8 @@
       git:
         repo: "https://github.com/pyenv/pyenv.git"
         dest: /home/jenkins/.pyenv
+      become_user: jenkins
+      become: true
 
     - name: Link pyenv binary
       file:
