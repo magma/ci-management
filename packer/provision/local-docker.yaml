@@ -173,7 +173,8 @@
 
     - name: Install python 3.7.0
       shell: pyenv install 3.7.0 -f
-      become: jenkins
+      become_user: jenkins
+      become: true
 
     - name: Install docker compose
       get_url:
@@ -186,11 +187,13 @@
 
     - name: Update vagrant plugins
       shell: vagrant plugin update
-      become: jenkins
+      become_user: jenkins
+      become: true
 
     - name: Install  vagrant dependencies
       shell: vagrant plugin install "{{item}}"
-      become: jenkins
+      become_user: jenkins
+      become: true
       loop:
         - vagrant-vbguest
         - vagrant-disksize
