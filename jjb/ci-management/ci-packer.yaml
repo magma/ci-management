@@ -1,10 +1,10 @@
 ---
 - project:
-    name: packer-project-view
-    project-name: packer
+    name: packer-common-view
+    view-name: packer
     view-regex: "^ci-management-packer-.*"
     views:
-      - project-view
+      - common-view
 
 - project:
     name: packer-verify
@@ -30,3 +30,18 @@
     platforms:
       - centos-7
       - ubuntu-18.04
+      - ubuntu-20.04
+      - ubuntu-20.04-arm64
+- project:
+    name: packer-builder-integ-jobs
+    jobs:
+      - github-packer-merge
+
+    project: ci-management
+    project-name: ci-management
+    branch: main
+    build-node: centos7-builder-2c-1g
+
+    templates: docker
+    platforms:
+      - ubuntu-20.04
