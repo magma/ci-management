@@ -4,7 +4,7 @@
     build-args: ""
     scm:
       - lf-infra-github-scm:
-          url: "github.com/magma/"
+          url: "git@github.com:magma/magma.git"
           refspec: ""
           branch: "refs/heads/{branch}"
           submodule-recursive: false
@@ -26,7 +26,12 @@
           white-list-target-branches:
             - "master"
     builders:
-      - shell: fab echo "Hello World"
+      - shell:
+          #!/bin/bash -ex
+          echo "Starting HIL test"
+          source /home/jenkins/hil_test/activate
+          cd /home/jenkins/hil_test/ens_magma/spirent_automation
+          python3 ./main.py run SANITY TC001 -f /home/landslide/spirent_hil_support_files/creds.json --gateway=phy-u4 --log-level debug
 
 - publisher:
     name: hiltest-jjb-email-notification
