@@ -1,0 +1,76 @@
+---
+############
+# BUILDERS #
+############
+
+###########
+# ANCHORS #
+###########
+- cwag_common: &cwag_common
+    name: cwag_common
+
+    ######################
+    # Default parameters #
+    ######################
+
+    branch: master
+
+    #####################
+    # Job Configuration #
+    #####################
+
+    project-type: pipeline
+    node: "{build-node}"
+    concurrent: true
+
+#################
+# JOB TEMPLATES #
+#################
+- job-template:
+    name: "cwag-integration-test-libvirt"
+    # Job template for cwag integration pipeline jobs
+
+    <<: *cwag_common
+    sandbox: true
+
+    triggers:
+      - github-pull-request:
+          admin-list:
+            - 119vik
+            - 119Vik
+            - ssanadhya
+            - mattymo
+          github-hooks: true
+          trigger-phrase: "^RestartCWAGTests$"
+          skip-build-phrase: '.*\[WIP\].*'
+          white-list-labels:
+            - "component: cwf"
+            - "component:+cwf"
+            - "component%3A+cwf"
+            - "component: agw"
+            - "component:+agw"
+            - "component%3A+agw"
+            - "component: feg"
+            - "component:+feg"
+            - "component%3A+feg"
+          permit-all: true
+          status-context: "Jenkins CWAG Libvirt"
+          triggered-status: "Build is triggered"
+          started-status: "Build is started"
+          success-status: "Tests successfully passed."
+          error-status: "Pipeline execution failed due to technical issue."
+          failure-status: "Pipeline execution failed due to technical issue."
+          cancel-builds-on-update: true
+
+    pipeline-scm:
+      script-path: ci-scripts/JenkinsFile-CWAG-integ-test-libvirt
+      scm:
+        - lf-infra-github-scm:
+            url: "{git-clone-url}{github-org}/{project}"
+            refspec: ""
+            branch: "refs/heads/{branch}"
+            submodule-recursive: "{submodule-recursive}"
+            choosing-strategy: default
+            jenkins-ssh-credential: "{jenkins-ssh-credential}"
+            submodule-disable: true
+            submodule-timeout: 10
