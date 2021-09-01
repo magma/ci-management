@@ -1,0 +1,83 @@
+---
+############
+# BUILDERS #
+############
+
+###########
+# ANCHORS #
+###########
+- vagrant_common: &vagrant_common
+    name: vagrant_common
+
+    ######################
+    # Default parameters #
+    ######################
+
+    branch: master
+
+    #####################
+    # Job Configuration #
+    #####################
+
+    project-type: pipeline
+    node: "{build-node}"
+
+    parameters:
+      - string:
+          name: BRANCH
+          default: "{branch}"
+
+#################
+# JOB TEMPLATES #
+#################
+- job-template:
+    name: "vagrant_build"
+    description: "Job template for vagrant build pipeline jobs"
+
+    <<: *vagrant_common
+    concurrent: false
+    sandbox: true
+
+    properties:
+      - github:
+          url: "https://github.com/{github-org}/{project}"
+          display-name: "Magma"
+
+    pipeline-scm:
+      script-path: ci-scripts/JenkinsFile-build-vagrant-boxes
+      scm:
+        - lf-infra-github-scm:
+            url: "{git-clone-url}{github-org}/{project}"
+            refspec: ""
+            branch: "refs/heads/{branch}"
+            submodule-recursive: "{submodule-recursive}"
+            choosing-strategy: default
+            jenkins-ssh-credential: "{jenkins-ssh-credential}"
+            submodule-disable: true
+            submodule-timeout: 10
+
+- job-template:
+    name: "vagrant_build_test"
+    description: "Builds Vagrant boxes for Magma project and publishes them"
+
+    <<: *vagrant_common
+    concurrent: false
+    sandbox: true
+
+    properties:
+      - github:
+          url: "https://github.com/{github-org}/{project}"
+          display-name: "Magma"
+
+    pipeline-scm:
+      script-path: ci-scripts/JenkinsFile-build-vagrant-boxes
+      scm:
+        - lf-infra-github-scm:
+            url: "{git-clone-url}{github-org}/{project}"
+            refspec: ""
+            branch: "refs/heads/{branch}"
+            submodule-recursive: "{submodule-recursive}"
+            choosing-strategy: default
+            jenkins-ssh-credential: "{jenkins-ssh-credential}"
+            submodule-disable: true
+            submodule-timeout: 10

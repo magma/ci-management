@@ -1,0 +1,14 @@
+---
+- project:
+    name: vagrant-project-view
+    project-name: vagrant
+    views:
+      - project-view
+
+- project:
+    name: vagrant-build
+    project: magma
+    branch: master
+    jobs:
+      - "vagrant_build"
+      - "vagrant_build_test"
