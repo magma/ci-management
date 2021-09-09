@@ -17,16 +17,19 @@
           build-timeout: "{build-timeout}"
           jenkins-ssh-credential: "{jenkins-ssh-credential}"
     triggers:
-      - github-pull-request:
-          trigger-phrase: "^(remerge)$"
-          only-trigger-phrase: true
-          status-context: "Magma AGW node merge"
-          permit-all: true
-          github-hooks: true
-          white-list-target-branches:
-            - "master"
+      - generic-webhook-trigger:
+          post-content-params:
+            - type: JSONPath
+              key: ARTIFACT_NAME
+              value: $.artifactory.webhook.data.name
+            - type: JSONPath
+              key: EVENT_NAME
+              value: $.artifactory.webhook.event
+        print-post-content: true
+        print-contrib-var: true
+        cause: Triggered on $ARTIFACT_NAME
     builders:
-      - shell:
+      - shell: |
           #!/bin/bash -ex
           echo "Starting HIL test"
           source /home/jenkins/hil_test/activate
