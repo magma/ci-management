@@ -25,9 +25,9 @@
             - type: JSONPath
               key: EVENT_NAME
               value: $.artifactory.webhook.event
-        print-post-content: true
-        print-contrib-var: true
-        cause: Triggered on $ARTIFACT_NAME
+          print-post-content: true
+          print-contrib-var: true
+          cause: Triggered on $ARTIFACT_NAME
     builders:
       - shell: |
           #!/bin/bash -ex
