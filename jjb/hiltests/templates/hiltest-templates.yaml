@@ -21,13 +21,15 @@
           post-content-params:
             - type: JSONPath
               key: ARTIFACT_NAME
-              value: $.artifactory.webhook.data.name
+              value: $.data.name
             - type: JSONPath
               key: EVENT_NAME
-              value: $.artifactory.webhook.event
+              value: $.event_type
           print-post-content: true
           print-contrib-var: true
           cause: Triggered on $ARTIFACT_NAME
+          regex-filter-text: $EVENT_TYPE-$ARTIFACT_NAME
+          regex-filter-expression: deployed-magma_*
     builders:
       - shell: |
           #!/bin/bash -ex
