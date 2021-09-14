@@ -28,8 +28,8 @@
           print-post-content: true
           print-contrib-var: true
           cause: Triggered on $ARTIFACT_NAME
-          regex-filter-text: $EVENT_TYPE-$ARTIFACT_NAME
-          regex-filter-expression: deployed-magma_*
+          regex-filter-text: $EVENT_NAME-$ARTIFACT_NAME
+          regex-filter-expression: deployed-magma_.*
     builders:
       - shell: |
           #!/bin/bash -ex
