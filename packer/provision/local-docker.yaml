@@ -1,0 +1,221 @@
+# This Ansible playbook adds packages to the
+# Magma docker build minion image.
+---
+- import_playbook: ../common-packer/provision/local-docker.yaml
+- hosts: all
+  become_user: root
+  become_method: sudo
+  become: true
+
+  tasks:
+    - name: Download virtual box key
+      apt_key:
+        url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+        state: present
+
+    - name: Add virtualbox repo
+      apt_repository:
+        repo: "deb https://download.virtualbox.org/virtualbox/debian focal contrib"
+        state: present
+
+    - name: install virtual box
+      apt: update_cache=yes name={{ item }} state=present
+      loop: ["linux-headers-generic", "virtualbox-6.1", "unzip"]
+
+    - name: install libvirt packages
+      apt: update_cache=yes name={{ item }} state=present
+      loop:
+        [
+          "qemu",
+          "libvirt-daemon-system",
+          "libvirt-clients",
+          "ebtables",
+          "dnsmasq-base",
+          "libicu-dev",
+          "libxslt-dev",
+          "libxml2-dev",
+          "libvirt-dev",
+          "zlib1g-dev",
+          "ruby-dev",
+          "nfs-common",
+          "nfs-kernel-server",
+        ]
+
+    - name: Download vagrant
+      get_url:
+        url: https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
+        dest: /tmp/vagrant_x86_64.deb
+
+    - name: Install vagrant
+      apt:
+        deb: /tmp/vagrant_x86_64.deb
+
+    - name: Install virtualisation packages
+      apt: update_cache=yes name={{ item }} state=present
+      loop:
+        ["qemu-kvm", "virt-top", "libguestfs-tools", "virtinst", "bridge-utils"]
+
+    - name: Enable vhost_net
+      community.general.modprobe:
+        name: vhost_net
+        state: present
+
+    - name: Add vhost_net to kernel modules
+      shell: echo "vhost_net" | sudo tee -a /etc/modules
+      args:
+        executable: /bin/bash
+
+    - name: Disable kvm_intel
+      community.general.modprobe:
+        name: kvm_intel
+        state: absent
+
+    - name: Add nested option to kvm-intel
+      shell: echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf
+      args:
+        executable: /bin/bash
+
+    - name: Enable kvm_intel
+      community.general.modprobe:
+        name: kvm_intel
+        state: present
+
+    - name: Restart libvirtd
+      service:
+        name: libvirtd
+        state: restarted
+
+    - name: Ensure groups exist
+      ansible.builtin.group:
+        name: "{item}"
+        state: present
+      loop:
+        - sudo
+        - kvm
+        - libvirt
+        - docker
+
+    - name: set up jenkins user
+      user:
+        name: jenkins
+        groups: sudo,kvm,libvirt
+
+    - name: Create a directory if it does not exist
+      file:
+        path: /var/jenkins/
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: "0755"
+
+    - name: Add ansible repo
+      apt_repository:
+        repo: ppa:ansible/ansible
+        state: present
+
+    - name: Install ansible
+      apt: update_cache=yes name={{ item }} state=latest
+      loop: ["ansible"]
+
+    - name: Unarchive a file that needs to be downloaded (added in 2.0)
+      unarchive:
+        src: https://golang.org/dl/go1.15.2.linux-amd64.tar.gz
+        dest: /usr/local/
+        remote_src: yes
+
+    - name: Link go binary
+      file:
+        src: /usr/local/go/bin/go
+        dest: /usr/local/bin/go
+        state: link
+
+    - name: Link gofmt binary
+      file:
+        src: /usr/local/go/bin/gofmt
+        dest: /usr/local/bin/gofmt
+        state: link
+
+    - name: install dependencies
+      apt: update_cache=yes name={{ item }} state=latest
+      loop:
+        [
+          "make",
+          "libssl-dev",
+          "zlib1g-dev",
+          "libbz2-dev",
+          "libreadline-dev",
+          "libsqlite3-dev",
+          "wget",
+          "curl",
+          "llvm",
+          "libncurses5-dev",
+          "libncursesw5-dev",
+          "xz-utils",
+          "tk-dev",
+          "libffi-dev",
+          "liblzma-dev",
+          "python-openssl",
+          "git",
+          "unzip",
+          "jq",
+        ]
+
+    - name: Download pyenv
+      git:
+        repo: "https://github.com/pyenv/pyenv.git"
+        dest: /home/jenkins/.pyenv
+      become_user: jenkins
+      become: true
+
+    - name: Link pyenv binary
+      file:
+        src: /home/jenkins/.pyenv/bin/pyenv
+        dest: /usr/local/bin/pyenv
+        state: link
+
+    - name: Install python 3.7.0
+      shell: pyenv install 3.7.0 -f
+      become_user: jenkins
+      become: true
+
+    - name: Install docker compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: "0777"
+
+    - name: Install junit2html
+      shell: pip install junit2html
+
+    - name: Update vagrant plugins
+      shell: vagrant plugin update
+      become_user: jenkins
+      become: true
+
+    - name: Install  vagrant dependencies
+      shell: vagrant plugin install "{{item}}"
+      become_user: jenkins
+      become: true
+      loop:
+        - vagrant-vbguest
+        - vagrant-disksize
+        - vagrant-libvirt
+
+    - name: Ensure br_netfilter is enabled.
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
+
+    - name: Sysctl fixes for LTE tests
+      sysctl:
+        sysctl_file: /etc/sysctl.d/99-magma.conf
+        name: "{{ item }}"
+        value: "0"
+        state: present
+        reload: yes
+      loop:
+        - net.bridge.bridge-nf-call-arptables
+        - net.bridge.bridge-nf-call-ip6tables
+        - net.bridge.bridge-nf-call-iptables
+        - net.ipv4.conf.all.rp_filter
+        - net.ipv4.conf.default.rp_filter

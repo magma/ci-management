@@ -1,0 +1,13 @@
+---
+- project:
+    name: cwag-project-view
+    project-name: cwag
+    views:
+      - project-view
+
+- project:
+    name: cwag-integration
+    project: magma
+    branch: master
+    jobs:
+      - "cwag-integration-test-libvirt"
