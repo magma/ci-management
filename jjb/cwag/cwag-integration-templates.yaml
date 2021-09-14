@@ -33,6 +33,10 @@
     <<: *cwag_common
     sandbox: true
 
+    properties:
+      - github:
+          url: "https://github.com/{github-org}/{project}"
+
     triggers:
       - github-pull-request:
           admin-list:
@@ -40,6 +44,7 @@
             - 119Vik
             - ssanadhya
             - mattymo
+            - jwagantall
           github-hooks: true
           trigger-phrase: "^RestartCWAGTests$"
           skip-build-phrase: '.*\[WIP\].*'
