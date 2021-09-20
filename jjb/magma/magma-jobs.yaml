@@ -1,0 +1,14 @@
+---
+- project:
+    name: magma-common-view
+    view-name: magma
+    view-regex: ".*-integration-.*|.*-magma-.*"
+    views:
+      - common-view
+
+- project:
+    name: magma-ci
+    project: magma
+    branch: master
+    jobs:
+      - "cwag-integration-test-libvirt"
