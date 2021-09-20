@@ -36,7 +36,7 @@
           echo "Starting HIL test"
           source /home/jenkins/hil_test/activate
           cd /home/jenkins/hil_test/ens_magma/spirent_automation
-          python3 ./main.py run SANITY TC001 -f /home/landslide/spirent_hil_support_files/creds.json --gateway=hil-1 --output-s3 --reboot --upgrade --skip-build-check --log-level info
+          python3 ./main.py run SANITY -f /home/landslide/spirent_hil_support_files/creds.json --gateway=hil-1 --output-s3 --reboot --upgrade --skip-build-check --log-level info
 
 - publisher:
     name: hiltest-jjb-email-notification
