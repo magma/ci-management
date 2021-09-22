@@ -1,0 +1,23 @@
+---
+- project:
+    name: magma-common-view
+    view-name: magma
+    view-regex: ".*-integration-.*|.*-magma-.*"
+    views:
+      - common-view
+
+- project:
+    name: magma-ci
+    project: magma
+    branch: master
+    jobs:
+      - "cwag-integration-test-libvirt"
+
+- project:
+    name: magma-vagrant
+    disabled: true
+    project: magma
+    branch: master
+    jobs:
+      - "vagrant_build"
+      - "vagrant_build_test"
