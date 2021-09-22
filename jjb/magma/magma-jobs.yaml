@@ -2,7 +2,7 @@
 - project:
     name: magma-common-view
     view-name: magma
-    view-regex: ".*-integration-.*|.*-magma-.*"
+    view-regex: ".*-integration-.*|.*-magma-.*|.*_build.*"
     views:
       - common-view
 
