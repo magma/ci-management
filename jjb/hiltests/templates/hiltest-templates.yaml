@@ -40,7 +40,7 @@
           pip3 install -r requirements
           cd /home/jenkins/hil_test/ens_magma/spirent_automation
           python3 ./main.py run SANITY -f /home/landslide/spirent_hil_support_files/creds.json \
-          --gateway=hil-1 --output-s3 --reboot --upgrade --skip-build-check --log-level info
+          --gateway=hil-1 --output-s3 --reboot --upgrade --skip-build-check --log-level info --release ci
 
 - publisher:
     name: hiltest-jjb-email-notification
