@@ -1,0 +1,66 @@
+---
+- job-template:
+    name: "{project-name}-LF-hiltest"
+    node: "static-ubuntu-dev-hiltest"
+    build-args: ""
+    scm:
+      - lf-infra-github-scm:
+          url: "git@github.com:magma/magma.git"
+          refspec: ""
+          branch: "refs/heads/{branch}"
+          submodule-recursive: false
+          submodule-timeout: "{submodule-timeout}"
+          submodule-disable: true
+          choosing-strategy: default
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    wrappers:
+      - lf-infra-wrappers:
+          build-timeout: "{build-timeout}"
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    triggers:
+      - generic-webhook-trigger:
+          post-content-params:
+            - type: JSONPath
+              key: ARTIFACT_NAME
+              value: $.data.name
+            - type: JSONPath
+              key: EVENT_NAME
+              value: $.event_type
+          print-post-content: true
+          print-contrib-var: true
+          cause: Triggered on $ARTIFACT_NAME
+          regex-filter-text: $EVENT_NAME-$ARTIFACT_NAME
+          regex-filter-expression: deployed-magma_.*
+    builders:
+      - shell: |
+          #!/bin/bash -ex
+          echo "Starting HIL test"
+          source /home/jenkins/hil_test/activate
+          cd /home/jenkins/hil_test/ens_magma/
+          pip3 install -r requirements
+          cd /home/jenkins/hil_test/ens_magma/spirent_automation
+          python3 ./main.py run SANITY -f /home/landslide/spirent_hil_support_files/creds.json \
+          --gateway=hil-1 --output-s3 --reboot --upgrade --skip-build-check --log-level info
+
+- publisher:
+    name: hiltest-jjb-email-notification
+    publishers:
+      - email:
+          recipients: "milapjoshi@fb.com"
+      - email-ext:
+          recipients: "milapjoshi@fb.com"
+          reply-to: "milapjoshi@fb.com"
+          content-type: default
+          subject: "{email-prefix} $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
+          body: |
+            $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+            Please refer to the logs server URL for console logs when possible
+            and use test the Jenkins Build URL as a last resort.
+            Jenkins Build URL:
+            $BUILD_URL
+          unstable: true
+          fixed: true
+          always: true
+          attachments: "**/reports/*"
+          send-to:
+            - recipients
