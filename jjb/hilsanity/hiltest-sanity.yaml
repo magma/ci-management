@@ -4,7 +4,7 @@
     views:
       - project-view
 - project:
-    name: sanity-job
+    name: sanitytest-job
     jobs:
       - "{project-name}-LF-hilsanity"
     project: hilsanity
