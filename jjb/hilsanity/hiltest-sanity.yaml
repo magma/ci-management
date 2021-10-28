@@ -1,5 +1,5 @@
 - project:
-    name: hiltest-project-view
+    name: hilsanity-project-view
     project-name: hilsanity
     views:
       - project-view
