@@ -11,9 +11,9 @@
     project-name: hiltest
     archive-artifacts: "**/*.log"
     branch: master
-    build-timeout: 120
-    submodule-timeout: 120
-    build-node: static-ubuntu-dev-hiltest
+    build-timeout: 10000
+    submodule-timeout: 10000
+    # build-node: static-ubuntu-dev-hiltest
     jjb-version: 3.5.0
     build-node-label-check: true
     build-node-label-list: "ci-hiltest"
