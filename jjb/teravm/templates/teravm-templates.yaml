@@ -1,0 +1,56 @@
+---
+- job-template:
+    name: "{project-name}-LF-teravm"
+    node: "ci-teravm"
+    workspace: /home/magma/logs/test_results
+    display-name: "LF-TeraVM Integration Test Run"
+    build-args: ""
+
+    wrappers:
+      - lf-infra-wrappers:
+          build-timeout: "{build-timeout}"
+          jenkins-ssh-credential: "{jenkins-ssh-credential}"
+    triggers:
+      - generic-webhook-trigger:
+          post-content-params:
+            - type: JSONPath
+              key: ARTIFACT_NAME
+              value: $.data.name
+            - type: JSONPath
+              key: EVENT_NAME
+              value: $.event_type
+          print-post-content: true
+          print-contrib-var: true
+          cause: Triggered on $ARTIFACT_NAME
+          regex-filter-text: $EVENT_NAME-$ARTIFACT_NAME
+          regex-filter-expression: deployed-magma_.*
+    builders:
+      - shell: cd /home/magma;sudo sh upgrade.sh;whoami;sleep 1 2 3 4;sudo -u magma mv /home/magma/TeraVM-Magma\ Daily\ Run\ Status.xlsx /home/magma/google-drive/Terravm/4G_Regression/.
+    publishers:
+      - email:
+          recipients: "vagrawal@fb.com"
+      - email-ext:
+          recipients: "vagrawal@fb.com,vaishali.agrawal@techmahindra.com"
+          reply-to: "vagrawal@fb.com"
+          content-type: default
+          subject: "LF Teravm integration"
+          body: "Daily 4G test results"
+          attach-build-log: false
+          compress-log: false
+          attachments: "**/*.txt"
+          always: true
+          send-to:
+            - recipients
+      - slack:
+          team-domain: "magmacore"
+          auth-token: "DpdAwCBHaDyOaCl7wKN4DtZ6"
+          auth-token-id: "magma-test"
+          room: "#magma-test"
+          notify-success: True
+          notify-aborted: True
+          notify-not-built: True
+          notify-failure: True
+          commit-info-choice: "AUTHORS_AND_TITLES"
+          include-custom-message: True
+          custom-message: "Please click on below G-drive link to view the 
+                           Daily Magma 4G Regression status report https://drive.google.com/drive/u/0/folders/1h3rzx_HGO0X1-6q0FDcr1KxQFHVVlcvv"
